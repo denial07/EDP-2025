@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "t2dWLMahC+Mesz3FpwJduzPjxTM9sB0/EEFM5q8zQbo=",
+  "Source": "EDP.Api",
+  "BasePath": "_content/EDP.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
