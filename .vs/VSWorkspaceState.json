@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\backend",
+    "\\backend\\Data",
+    "\\backend\\EDP.Api",
+    "\\backend\\Endpoints",
+    "\\backend\\Services"
+  ],
+  "SelectedNode": "\\backend\\EDP.Api\\obj",
+  "PreviewInSolutionExplorer": false
+}
