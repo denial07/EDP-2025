@@ -170,3 +170,10 @@ C:\Users\danie\OneDrive\Documents\GitHub\EDP-2025\backend\EDP.Api\obj\Debug\net9
 C:\Users\danie\OneDrive\Documents\GitHub\EDP-2025\backend\EDP.Api\obj\Debug\net9.0\EDP.Api.pdb
 C:\Users\danie\OneDrive\Documents\GitHub\EDP-2025\backend\EDP.Api\obj\Debug\net9.0\EDP.Api.genruntimeconfig.cache
 C:\Users\danie\OneDrive\Documents\GitHub\EDP-2025\backend\EDP.Api\obj\Debug\net9.0\ref\EDP.Api.dll
+C:\Users\danie\OneDrive\Documents\GitHub\EDP-2025\backend\EDP.Api\bin\Debug\net9.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\danie\OneDrive\Documents\GitHub\EDP-2025\backend\EDP.Api\bin\Debug\net9.0\Otp.NET.dll
+C:\Users\danie\OneDrive\Documents\GitHub\EDP-2025\backend\EDP.Api\bin\Debug\net9.0\QRCoder.dll
+C:\Users\danie\OneDrive\Documents\GitHub\EDP-2025\backend\EDP.Api\bin\Debug\net9.0\System.Drawing.Common.dll
+C:\Users\danie\OneDrive\Documents\GitHub\EDP-2025\backend\EDP.Api\bin\Debug\net9.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\danie\OneDrive\Documents\GitHub\EDP-2025\backend\EDP.Api\bin\Debug\net9.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
+C:\Users\danie\OneDrive\Documents\GitHub\EDP-2025\backend\EDP.Api\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll

@@ -18,6 +18,7 @@ export function Sidebar({ role }: SidebarProps) {
     { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
     { href: "/dashboard/reports", label: "Reports", icon: FileText },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
+    { href: "/dashboard/mfa/enroll", label: "Projects", icon: Package },
   ]
 
   const managerLinks = [

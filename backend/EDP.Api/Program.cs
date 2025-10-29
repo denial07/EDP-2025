@@ -7,6 +7,7 @@ using EDP.Api.Data;
 using EDP.Api.Endpoints;
 using EDP.Api.Services;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ---------- Database ----------
@@ -45,8 +46,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddCors(p => p.AddPolicy("frontend", policy =>
-{
-    policy.WithOrigins("http://localhost:5173") // React dev server
+{   
+    policy.WithOrigins("http://localhost:5173", "http://localhost:3000") // React dev server & next.js dev server
           .AllowAnyHeader()
           .AllowAnyMethod();
 }));
@@ -70,6 +71,7 @@ app.UseAuthorization();
 
 // ---------- Endpoints ----------
 app.MapAuth();
+app.MapMfa();
 
 // ---------- Run ----------
 app.Run();
