@@ -4,6 +4,7 @@ import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
 
 import { API_BASE_URL } from "./config"
+import { NETWORK_ERROR_MESSAGE, normalizeFetchError } from "./errors"
 
 interface User {
   id: string
@@ -93,6 +94,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const mappedUser = mapUser(data.user ?? data, user?.name)
       persistSession(storedToken, mappedUser)
     } catch (error) {
+      if (error instanceof TypeError) {
+        console.warn(NETWORK_ERROR_MESSAGE)
+        return
+      }
+
       clearSession()
     }
   }
@@ -116,79 +122,91 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const login = async (email: string, password: string): Promise<LoginResult> => {
-    const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    })
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
 
-    if (!res.ok) {
-      const errorBody = await res.json().catch(() => null)
-      const message = errorBody?.message ?? "Invalid email or password"
-      throw new Error(message)
+      if (!res.ok) {
+        const errorBody = await res.json().catch(() => null)
+        const message = errorBody?.message ?? "Invalid email or password"
+        throw new Error(message)
+      }
+
+      const data = await res.json()
+
+      if (data.requiresTwoFactor && data.twoFactorToken) {
+        return { status: "two-factor", twoFactorToken: data.twoFactorToken as string }
+      }
+
+      const authData = data as AuthResponse
+      const mappedUser = mapUser(authData.user)
+      persistSession(authData.token, mappedUser)
+
+      return { status: "success" }
+    } catch (error) {
+      throw normalizeFetchError(error)
     }
-
-    const data = await res.json()
-
-    if (data.requiresTwoFactor && data.twoFactorToken) {
-      return { status: "two-factor", twoFactorToken: data.twoFactorToken as string }
-    }
-
-    const authData = data as AuthResponse
-    const mappedUser = mapUser(authData.user)
-    persistSession(authData.token, mappedUser)
-
-    return { status: "success" }
   }
 
   const verifyTwoFactor = async (twoFactorToken: string, code: string) => {
-    const res = await fetch(`${API_BASE_URL}/api/auth/totp/verify`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ twoFactorToken, code }),
-    })
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/totp/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ twoFactorToken, code }),
+      })
 
-    if (!res.ok) {
-      const errorBody = await res.json().catch(() => null)
-      const message = errorBody?.message ?? "Invalid verification code"
-      throw new Error(message)
+      if (!res.ok) {
+        const errorBody = await res.json().catch(() => null)
+        const message = errorBody?.message ?? "Invalid verification code"
+        throw new Error(message)
+      }
+
+      const data = (await res.json()) as AuthResponse
+      const mappedUser = mapUser(data.user)
+      persistSession(data.token, mappedUser)
+    } catch (error) {
+      throw normalizeFetchError(error)
     }
-
-    const data = (await res.json()) as AuthResponse
-    const mappedUser = mapUser(data.user)
-    persistSession(data.token, mappedUser)
   }
 
   const register = async (name: string, email: string, password: string) => {
-    const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, name }),
-    })
-
-    if (!res.ok) {
-      const errorBody = await res.json().catch(() => null)
-      const message =
-        Array.isArray(errorBody) && errorBody.length > 0
-          ? errorBody[0]
-          : errorBody?.message ?? "Unable to register"
-      throw new Error(message)
-    }
-
-    const result = await login(email, password)
-
-    if (result.status === "two-factor") {
-      // New accounts shouldn't require 2FA but handle gracefully
-      throw new Error("Two-factor authentication is required to complete sign in. Please log in with your code.")
-    }
-
-    if (name) {
-      setUser((prev) => {
-        if (!prev) return prev
-        const updated = { ...prev, name }
-        localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(updated))
-        return updated
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, name }),
       })
+
+      if (!res.ok) {
+        const errorBody = await res.json().catch(() => null)
+        const message =
+          Array.isArray(errorBody) && errorBody.length > 0
+            ? errorBody[0]
+            : errorBody?.message ?? "Unable to register"
+        throw new Error(message)
+      }
+
+      const result = await login(email, password)
+
+      if (result.status === "two-factor") {
+        // New accounts shouldn't require 2FA but handle gracefully
+        throw new Error("Two-factor authentication is required to complete sign in. Please log in with your code.")
+      }
+
+      if (name) {
+        setUser((prev) => {
+          if (!prev) return prev
+          const updated = { ...prev, name }
+          localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(updated))
+          return updated
+        })
+      }
+    } catch (error) {
+      throw normalizeFetchError(error)
     }
   }
 

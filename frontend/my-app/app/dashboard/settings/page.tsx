@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { API_BASE_URL } from "@/lib/config"
+import { normalizeFetchError } from "@/lib/errors"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -64,7 +65,8 @@ export default function SettingsPage() {
       setTotpSetup(data)
       setTotpCode("")
     } catch (error) {
-      setTotpError(error instanceof Error ? error.message : "Unable to start setup")
+      const normalized = normalizeFetchError(error)
+      setTotpError(normalized.message)
     } finally {
       setIsGenerating(false)
     }
@@ -106,7 +108,8 @@ export default function SettingsPage() {
       setTotpSetup(null)
       setTotpCode("")
     } catch (error) {
-      setTotpError(error instanceof Error ? error.message : "Unable to enable two-factor authentication")
+      const normalized = normalizeFetchError(error)
+      setTotpError(normalized.message)
     } finally {
       setIsVerifying(false)
     }
@@ -141,7 +144,8 @@ export default function SettingsPage() {
       setTotpSetup(null)
       setTotpCode("")
     } catch (error) {
-      setTotpError(error instanceof Error ? error.message : "Unable to disable two-factor authentication")
+      const normalized = normalizeFetchError(error)
+      setTotpError(normalized.message)
     } finally {
       setIsDisabling(false)
     }

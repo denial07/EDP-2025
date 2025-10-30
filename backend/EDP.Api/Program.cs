@@ -46,7 +46,11 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddCors(p => p.AddPolicy("frontend", policy =>
 {
-    policy.WithOrigins("http://localhost:5173") // React dev server
+    policy.WithOrigins(
+            "http://localhost:3000", // Next.js dev server
+            "https://localhost:3000",
+            "http://localhost:5173",
+            "https://localhost:5173")
           .AllowAnyHeader()
           .AllowAnyMethod();
 }));
