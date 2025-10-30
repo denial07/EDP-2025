@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EDP.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5407cee9b09c495173f4f758cb9fac69a9eb5242")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+583a774e45e2099fad2bed1666efd0d0c605ef91")]
 [assembly: System.Reflection.AssemblyProductAttribute("EDP.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EDP.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
