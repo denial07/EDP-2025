@@ -3,19 +3,20 @@
 import { useAuth } from "@/lib/auth-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Mail, Calendar, Shield } from "lucide-react"
+import { Mail, Calendar, Shield, Lock } from "lucide-react"
 
 export default function ProfilePage() {
   const { user } = useAuth()
 
   if (!user) return null
 
-  const getInitials = (name: string) => {
-    return name
+  const getInitials = (value: string) => {
+    return value
       .split(" ")
+      .filter(Boolean)
       .map((n) => n[0])
       .join("")
+      .substring(0, 2)
       .toUpperCase()
   }
 
@@ -39,9 +40,7 @@ export default function ProfilePage() {
             </Avatar>
             <div className="text-center">
               <h3 className="text-xl font-semibold">{user.name}</h3>
-              <Badge variant="secondary" className="mt-2 capitalize">
-                {user.role}
-              </Badge>
+              <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
             </div>
           </CardContent>
         </Card>
@@ -77,8 +76,22 @@ export default function ProfilePage() {
                 <Shield className="h-5 w-5 text-muted-foreground" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium">Account Type</p>
-                <p className="text-sm text-muted-foreground capitalize">{user.role} Account</p>
+                <p className="text-sm font-medium">Security</p>
+                <p className="text-sm text-muted-foreground">
+                  {user.hasTwoFactorEnabled
+                    ? "Two-factor authentication is enabled."
+                    : "Enable two-factor authentication from Settings to protect your account."}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <div className="rounded-lg bg-muted p-2">
+                <Lock className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">Account ID</p>
+                <p className="text-sm text-muted-foreground">{user.id}</p>
               </div>
             </div>
           </CardContent>

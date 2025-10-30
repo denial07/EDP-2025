@@ -25,13 +25,18 @@ export function DashboardHeader() {
     router.push("/login")
   }
 
-  const getInitials = (name: string) => {
-    return name
+  const getInitials = (value?: string) => {
+    if (!value) return "U"
+    return value
       .split(" ")
+      .filter(Boolean)
       .map((n) => n[0])
       .join("")
+      .substring(0, 2)
       .toUpperCase()
   }
+
+  const displayName = user?.name || user?.email || "there"
 
   return (
     <header className="sticky top-0 z-50 flex h-16 items-center gap-4 border-b bg-card px-6">
@@ -43,12 +48,12 @@ export function DashboardHeader() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="p-0">
-          {user && <Sidebar role={user.role} />}
+          {user && <Sidebar />}
         </SheetContent>
       </Sheet>
 
       <div className="flex-1">
-        <h1 className="text-lg font-semibold">Welcome back, {user?.name}</h1>
+        <h1 className="text-lg font-semibold">Welcome back, {displayName}</h1>
       </div>
 
       <DropdownMenu>
@@ -56,7 +61,7 @@ export function DashboardHeader() {
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
             <Avatar>
               <AvatarFallback className="bg-primary text-primary-foreground">
-                {user ? getInitials(user.name) : "U"}
+                {getInitials(user?.name || user?.email)}
               </AvatarFallback>
             </Avatar>
           </Button>
@@ -64,7 +69,7 @@ export function DashboardHeader() {
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{user?.name}</p>
+              <p className="text-sm font-medium leading-none">{displayName}</p>
               <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
             </div>
           </DropdownMenuLabel>

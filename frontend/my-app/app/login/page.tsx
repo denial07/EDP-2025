@@ -14,29 +14,57 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function LoginPage() {
   const router = useRouter()
-  const { login } = useAuth()
+  const { login, verifyTwoFactor } = useAuth()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [code, setCode] = useState("")
+  const [infoMessage, setInfoMessage] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [twoFactorToken, setTwoFactorToken] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+    setInfoMessage("")
     setIsLoading(true)
 
     try {
+      if (twoFactorToken) {
+        if (!code || code.length < 6) {
+          throw new Error("Enter the 6-digit code from your authenticator app")
+        }
+
+        await verifyTwoFactor(twoFactorToken, code)
+        router.push("/dashboard")
+        return
+      }
+
       if (!email || !password) {
         throw new Error("Please fill in all fields")
       }
 
-      await login(email, password)
+      const result = await login(email, password)
+
+      if (result.status === "two-factor") {
+        setTwoFactorToken(result.twoFactorToken)
+        setInfoMessage("Two-factor authentication is enabled. Enter the code from your authenticator app to continue.")
+        setCode("")
+        return
+      }
+
       router.push("/dashboard")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to login")
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleUseDifferentAccount = () => {
+    setTwoFactorToken(null)
+    setCode("")
+    setInfoMessage("")
   }
 
   return (
@@ -55,38 +83,67 @@ export default function LoginPage() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-                  Forgot password?
-                </Link>
+            {infoMessage && (
+              <Alert>
+                <AlertDescription>{infoMessage}</AlertDescription>
+              </Alert>
+            )}
+            {!twoFactorToken ? (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="name@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Password</Label>
+                    <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
+                    required
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="space-y-2">
+                <Label htmlFor="code">Authenticator code</Label>
+                <Input
+                  id="code"
+                  inputMode="numeric"
+                  pattern="\d*"
+                  maxLength={6}
+                  placeholder="000000"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ""))}
+                  disabled={isLoading}
+                  required
+                />
               </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-                required
-              />
-            </div>
+            )}
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? "Please wait..." : twoFactorToken ? "Verify code" : "Sign in"}
             </Button>
+            {twoFactorToken && (
+              <Button type="button" variant="ghost" className="w-full" onClick={handleUseDifferentAccount} disabled={isLoading}>
+                Use a different account
+              </Button>
+            )}
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">

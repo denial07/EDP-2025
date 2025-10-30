@@ -11,8 +11,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
 export default function RegisterPage() {
   const router = useRouter()
   const { register } = useAuth()
@@ -20,7 +18,6 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const [role, setRole] = useState<"admin" | "manager" | "customer">("customer")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
@@ -42,7 +39,7 @@ export default function RegisterPage() {
         throw new Error("Password must be at least 8 characters")
       }
 
-      await register(name, email, password, role)
+      await register(name, email, password)
       router.push("/dashboard")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to register")
@@ -88,23 +85,6 @@ export default function RegisterPage() {
                 disabled={isLoading}
                 required
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="role">Account Type</Label>
-              <Select
-                value={role}
-                onValueChange={(value: "admin" | "manager" | "customer") => setRole(value)}
-                disabled={isLoading}
-              >
-                <SelectTrigger id="role">
-                  <SelectValue placeholder="Select account type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="customer">Customer</SelectItem>
-                  <SelectItem value="manager">Manager</SelectItem>
-                  <SelectItem value="admin">Administrator</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
